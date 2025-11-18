@@ -1,8 +1,8 @@
 <template>
 	<main class="container py-4">
 		<header class="mb-4">
-			<h2 class="fw-bold mb-1">Desconto por Antecipação</h2>
-			<p class="text-muted mb-0">Replica os cálculos do Nubank (estimativa).</p>
+			<h2 class="fw-bold mb-1 text-white">Desconto por Antecipação</h2>
+			<p class="mb-0 text-white">Replica os cálculos do Nubank (estimativa).</p>
 		</header>
 		<Simulator />
 		<footer class="mt-4 text-center small d-flex justify-content-center align-items-center">

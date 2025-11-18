@@ -6,9 +6,10 @@
 
 body {
   font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
-  background: radial-gradient(circle at top, rgba(130, 10, 209, 0.08) 0%, transparent 55%),
+  /* background: radial-gradient(circle at top, rgba(130, 10, 209, 0.08) 0%, transparent 55%),
     radial-gradient(circle at 20% 20%, rgba(0, 196, 180, 0.15) 0%, transparent 35%),
-    #f6f7fb;
+    #f6f7fb; */
+    background-color: #490B75;
   color: var(--text-default);
   min-height: 100vh;
 }
