@@ -5,13 +5,13 @@
 			<p class="mb-0 text-white">Replica os cálculos do Nubank (estimativa).</p>
 		</header>
 		<Simulator />
-		<footer class="mt-4 text-center small d-flex justify-content-center align-items-center">
+		<footer class="mt-4 text-center small d-flex justify-content-center align-items-center text-white">
 			<div class="row">
 				<div class="col-12">
 					<p class="m-0">Feito com Vue 3 + TypeScript + Bootstrap por Franchescolle Dadalto</p>
 				</div>
 				<div class="col-12">
-					<img class="m-0 p-0 ms-2 me-1" style="opacity: 0.4;" src="./assets//envelope.svg" alt="env"
+					<img class="m-0 p-0 ms-2 me-1" style="opacity: 1;" src="./assets//envelope.svg" alt="env"
 						height="13" />
 					<span>ffdadalto@gmail.com</span>
 				</div>
