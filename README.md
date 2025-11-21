@@ -2,6 +2,8 @@
 
 Aplicação em Vue 3 + TypeScript que replica (de forma estimada) o cálculo de desconto por antecipação de parcelas usado pelo Nubank. A interface foi personalizada com a paleta oficial do banco digital e fornece uma experiência próxima à exibida no app.
 
+🔗 **Live demo:** https://nubank.dadalto.tec.br/
+
 ## Principais recursos
 - Conversão automática da taxa anual em taxa mensal efetiva.
 - Salva os últimos valores preenchidos no `localStorage` para retomar a simulação depois.
