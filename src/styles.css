@@ -1,0 +1,60 @@
+:root {
+  --brand: #5b8def;
+  --text-default: #2f1f3c;
+  --text-muted: #7b6e8a;
+}
+
+body {
+  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+  /* background: radial-gradient(circle at top, rgba(130, 10, 209, 0.08) 0%, transparent 55%),
+    radial-gradient(circle at 20% 20%, rgba(0, 196, 180, 0.15) 0%, transparent 35%),
+    #f6f7fb; */
+    background-color: #490B75;
+  color: var(--text-default);
+  min-height: 100vh;
+}
+
+.card {
+  border-radius: 14px;
+}
+
+.table thead th {
+  position: sticky;
+  top: 0;
+  background: #fff;
+}
+
+.badge-soft {
+  background: #eef3ff;
+  color: #214cce;
+}
+
+.input-suffix {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+footer {
+  color: var(--text-muted);
+}
+
+.small-muted {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.zebra tbody tr:nth-child(odd) {
+  background: #f9fbff;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+@media (max-width: 768px) {
+  .grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
