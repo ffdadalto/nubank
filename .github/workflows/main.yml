@@ -10,7 +10,6 @@ concurrency:
 
 jobs:
     deploy:
-        name: Build + Deploy on Windows Server (IIS)
         runs-on: [self-hosted, windows, x64]
 
         steps:
@@ -24,43 +23,45 @@ jobs:
                   cache: "npm"
 
             - name: Install dependencies
-              shell: pwsh
+              shell: powershell
               run: npm ci
 
             - name: Build
-              shell: pwsh
+              shell: powershell
               run: npm run build
 
             - name: Validate build output
-              shell: pwsh
+              shell: powershell
               run: |
-                  if (!(Test-Path ".\dist")) { throw "Pasta .\dist não encontrada. Confere seu build (vite/webpack) e a saída." }
+                  if (!(Test-Path ".\dist")) { throw "Pasta .\dist não encontrada. Confere a saída do build." }
 
-            - name: Stop IIS site
-              shell: pwsh
+            - name: IIS debug (whoami + list sites)
+              shell: powershell
               run: |
-                  Import-Module WebAdministration
-                  $siteName = "Nubank"  # <<< NOME EXATO do site no IIS
+                  whoami
+                  $appcmd = "$env:windir\System32\inetsrv\appcmd.exe"
+                  if (!(Test-Path $appcmd)) { throw "appcmd não encontrado em $appcmd. IIS está instalado nesse servidor?" }
+                  & $appcmd list site
 
-                  if (!(Test-Path "IIS:\Sites\$siteName")) {
-                    throw "Site IIS '$siteName' não encontrado. Confere o nome no IIS."
-                  }
-
-                  Stop-WebSite -Name $siteName
+            - name: Stop IIS site (Nubank)
+              shell: powershell
+              run: |
+                  $appcmd = "$env:windir\System32\inetsrv\appcmd.exe"
+                  & $appcmd stop site "Nubank"
 
             - name: Copy dist to IIS folder
-              shell: pwsh
+              shell: powershell
               run: |
                   $source = (Resolve-Path ".\dist").Path
-                  $target = "C:\inetpub\wwwroot\Nubank"  # <<< Physical Path do site no IIS
+                  $target = "C:\inetpub\wwwroot\Nubank"  # <<< AJUSTE se seu Physical Path for outro
 
                   New-Item -ItemType Directory -Force -Path $target | Out-Null
 
                   robocopy $source $target /MIR /R:2 /W:2 /NFL /NDL /NP
                   if ($LASTEXITCODE -ge 8) { exit $LASTEXITCODE }
 
-            - name: Start IIS site
-              shell: pwsh
+            - name: Start IIS site (Nubank)
+              shell: powershell
               run: |
-                  Import-Module WebAdministration
-                  Start-WebSite -Name "Nubank"
+                  $appcmd = "$env:windir\System32\inetsrv\appcmd.exe"
+                  & $appcmd start site "Nubank"
