@@ -1,36 +1,66 @@
-name: Deploy Node App
+name: Deploy Node App (Self-Hosted + IIS)
 
 on:
     push:
-        branches:
-            - main
+        branches: ["main"]
+
+concurrency:
+    group: deploy-nubank
+    cancel-in-progress: true
 
 jobs:
     deploy:
-        name: Deploy to FTP
-        runs-on: ubuntu-latest
+        name: Build + Deploy on Windows Server (IIS)
+        runs-on: [self-hosted, windows, x64]
 
         steps:
-            - name: Checkout Repository
+            - name: Checkout
               uses: actions/checkout@v4
 
-            - name: Setup Node.js
+            - name: Setup Node.js 22
               uses: actions/setup-node@v4
               with:
                   node-version: "22"
+                  cache: "npm"
 
-            - name: Install Dependencies
-              run: npm install
+            - name: Install dependencies
+              shell: pwsh
+              run: npm ci
 
-            - name: Build Application
+            - name: Build
+              shell: pwsh
               run: npm run build
 
-            - name: Deploy via FTP
-              uses: SamKirkland/FTP-Deploy-Action@4.3.0
-              with:
-                  server: ${{ secrets.WIN_HOST }}
-                  username: ${{ secrets.WIN_USERNAME }}
-                  password: ${{ secrets.WIN_PASSWORD }}
-                  local-dir: dist/
-                  server-dir: /Nubank/
-                  port: ${{ secrets.WIN_PORT }}
+            - name: Validate build output
+              shell: pwsh
+              run: |
+                  if (!(Test-Path ".\dist")) { throw "Pasta .\dist não encontrada. Confere seu build (vite/webpack) e a saída." }
+
+            - name: Stop IIS site
+              shell: pwsh
+              run: |
+                  Import-Module WebAdministration
+                  $siteName = "Nubank"  # <<< NOME EXATO do site no IIS
+
+                  if (!(Test-Path "IIS:\Sites\$siteName")) {
+                    throw "Site IIS '$siteName' não encontrado. Confere o nome no IIS."
+                  }
+
+                  Stop-WebSite -Name $siteName
+
+            - name: Copy dist to IIS folder
+              shell: pwsh
+              run: |
+                  $source = (Resolve-Path ".\dist").Path
+                  $target = "C:\inetpub\wwwroot\Nubank"  # <<< Physical Path do site no IIS
+
+                  New-Item -ItemType Directory -Force -Path $target | Out-Null
+
+                  robocopy $source $target /MIR /R:2 /W:2 /NFL /NDL /NP
+                  if ($LASTEXITCODE -ge 8) { exit $LASTEXITCODE }
+
+            - name: Start IIS site
+              shell: pwsh
+              run: |
+                  Import-Module WebAdministration
+                  Start-WebSite -Name "Nubank"
