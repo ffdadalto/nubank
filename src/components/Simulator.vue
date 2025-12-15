@@ -118,18 +118,6 @@ onMounted(() => {
 				</div>
 			</div>
 			<form class="mb-3" @submit.prevent>
-				<div class="mb-2 d-flex gap-2 align-items-center flex-wrap">
-					<label class="small-muted me-2 mb-0">Exemplos rápidos:</label>
-					<button type="button" class="btn btn-outline-primary btn-sm" @click="apply(4952, 3, true)">R$ 4.952
-						em 3x (1ª
-						mês 0)</button>
-					<button type="button" class="btn btn-outline-primary btn-sm" @click="apply(4952, 6, true)">R$ 4.952
-						em 6x (1ª
-						mês 0)</button>
-					<button type="button" class="btn btn-outline-primary btn-sm" @click="apply(4952, 12, true)">R$ 4.952
-						em 12x
-						(1ª mês 0)</button>
-				</div>
 				<div class="row g-3">
 					<div class="col-12 col-md-6 col-lg-3">
 						<label class="form-label">Valor da compra</label>
@@ -247,61 +235,61 @@ onMounted(() => {
 <style scoped>
 /* Card especial para benefício total */
 .total-benefit-card {
-        background: linear-gradient(135deg, #fff3e0 0%, #f3e5f5 100%) !important;
-        border-color: #ff9800 !important;
-        border-width: 2px !important;
+	background: linear-gradient(135deg, #fff3e0 0%, #f3e5f5 100%) !important;
+	border-color: #ff9800 !important;
+	border-width: 2px !important;
 }
 
 .total-benefit-card .text-primary {
-        color: #1565c0 !important;
-        font-weight: 600 !important;
+	color: #1565c0 !important;
+	font-weight: 600 !important;
 }
 
 .discount-card {
-        background: linear-gradient(135deg, #e8f5e8 0%, #f0f8e8 100%) !important;
-        border-color: #4caf50 !important;
+	background: linear-gradient(135deg, #e8f5e8 0%, #f0f8e8 100%) !important;
+	border-color: #4caf50 !important;
 }
 
 .discount-card .text-success {
-        color: #2e7d32 !important;
+	color: #2e7d32 !important;
 }
 
 .fs-4 {
-font-size: 1.5rem;
+	font-size: 1.5rem;
 }
 
 .aviso {
-padding: 12px 14px;
-background: rgba(130, 10, 209, 0.06);
-border-left: 3px solid rgba(130, 10, 209, 0.6);
-border-radius: 10px;
-display: flex;
-align-items: flex-start;
-flex-direction: column;
-width: 100%;
+	padding: 12px 14px;
+	background: rgba(130, 10, 209, 0.06);
+	border-left: 3px solid rgba(130, 10, 209, 0.6);
+	border-radius: 10px;
+	display: flex;
+	align-items: flex-start;
+	flex-direction: column;
+	width: 100%;
 }
 
 /* Grid layouts responsivos */
 .grid-2 {
-display: grid;
-grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-gap: 1rem;
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+	gap: 1rem;
 }
 
 .grid-3 {
-display: grid;
-grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-gap: 1rem;
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+	gap: 1rem;
 }
 
 /* Card especial para cashback */
 .cashback-card {
-        background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%) !important;
-        border-color: #81c784 !important;
+	background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%) !important;
+	border-color: #81c784 !important;
 }
 
 .cashback-card .text-info {
-        color: #1976d2 !important;
+	color: #1976d2 !important;
 }
 
 @media (max-width: 768px) {
