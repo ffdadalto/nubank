@@ -49,16 +49,23 @@ jobs:
                   $appcmd = "$env:windir\System32\inetsrv\appcmd.exe"
                   & $appcmd stop site "Nubank"
 
-            - name: Copy dist to IIS folder
-              shell: powershell
-              run: |
-                  $source = (Resolve-Path ".\dist").Path
-                  $target = "C:\inetpub\wwwroot\Nubank"  # <<< AJUSTE se seu Physical Path for outro
+                  - name: Copy dist to IIS folder
+                  shell: powershell
+                  run: |
+                    $source = (Resolve-Path ".\dist").Path
+                    $target = "C:\inetpub\wwwroot\Nubank"
 
-                  New-Item -ItemType Directory -Force -Path $target | Out-Null
+                    New-Item -ItemType Directory -Force -Path $target | Out-Null
 
-                  robocopy $source $target /MIR /R:2 /W:2 /NFL /NDL /NP
-                  if ($LASTEXITCODE -ge 8) { exit $LASTEXITCODE }
+                    # opcional: limpa a sujeira do FTP antigo
+                    Remove-Item "$target\.ftp-deploy-sync-state.json" -Force -ErrorAction SilentlyContinue
+
+                    robocopy $source $target /MIR /R:2 /W:2 /NFL /NDL /NP
+
+                    $rc = $LASTEXITCODE
+                    if ($rc -ge 8) { throw "Robocopy falhou (exit code $rc)" }
+
+                    exit 0
 
             - name: Start IIS site (Nubank)
               shell: powershell
