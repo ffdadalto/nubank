@@ -10,6 +10,7 @@ concurrency:
 
 jobs:
     deploy:
+        name: Build + Deploy on Windows Server (IIS)
         runs-on: [self-hosted, windows, x64]
 
         steps:
@@ -35,40 +36,60 @@ jobs:
               run: |
                   if (!(Test-Path ".\dist")) { throw "Pasta .\dist não encontrada. Confere a saída do build." }
 
-            - name: IIS debug (whoami + list sites)
+            - name: IIS debug (whoami + list sites + app pools)
               shell: powershell
               run: |
                   whoami
                   $appcmd = "$env:windir\System32\inetsrv\appcmd.exe"
                   if (!(Test-Path $appcmd)) { throw "appcmd não encontrado em $appcmd. IIS está instalado nesse servidor?" }
                   & $appcmd list site
+                  & $appcmd list apppool
 
-            - name: Stop IIS site (Nubank)
+            - name: Recycle App Pool (only if exists)
               shell: powershell
               run: |
+                  $poolName = "Nubank"
                   $appcmd = "$env:windir\System32\inetsrv\appcmd.exe"
-                  & $appcmd stop site "Nubank"
 
-                  - name: Copy dist to IIS folder
-                  shell: powershell
-                  run: |
-                    $source = (Resolve-Path ".\dist").Path
-                    $target = "C:\inetpub\wwwroot\Nubank"
-
-                    New-Item -ItemType Directory -Force -Path $target | Out-Null
-
-                    # opcional: limpa a sujeira do FTP antigo
-                    Remove-Item "$target\.ftp-deploy-sync-state.json" -Force -ErrorAction SilentlyContinue
-
-                    robocopy $source $target /MIR /R:2 /W:2 /NFL /NDL /NP
-
-                    $rc = $LASTEXITCODE
-                    if ($rc -ge 8) { throw "Robocopy falhou (exit code $rc)" }
-
+                  $poolLine = & $appcmd list apppool "$poolName" 2>$null
+                  if (-not $poolLine) {
+                    Write-Host "App Pool '$poolName' não encontrado. Vou pular recycle."
                     exit 0
+                  }
 
-            - name: Start IIS site (Nubank)
+                  Write-Host "Reciclando App Pool '$poolName'..."
+                  & $appcmd recycle apppool "$poolName"
+
+            - name: Copy dist to IIS folder
               shell: powershell
               run: |
+                  $source = (Resolve-Path ".\dist").Path
+                  $target = "C:\inetpub\wwwroot\Nubank"
+
+                  New-Item -ItemType Directory -Force -Path $target | Out-Null
+
+                  # limpa resquício do deploy antigo via FTP
+                  Remove-Item "$target\.ftp-deploy-sync-state.json" -Force -ErrorAction SilentlyContinue
+
+                  robocopy $source $target /MIR /R:2 /W:2 /NFL /NDL /NP
+
+                  $rc = $LASTEXITCODE
+                  if ($rc -ge 8) { throw "Robocopy falhou (exit code $rc)" }
+
+                  exit 0
+
+            - name: Ensure site is Started (only if stopped)
+              shell: powershell
+              run: |
+                  $siteName = "Nubank"
                   $appcmd = "$env:windir\System32\inetsrv\appcmd.exe"
-                  & $appcmd start site "Nubank"
+
+                  $siteLine = & $appcmd list site "$siteName" 2>$null
+                  if (-not $siteLine) { throw "Site IIS '$siteName' não encontrado." }
+
+                  if ($siteLine -match "state:Stopped") {
+                    Write-Host "Site '$siteName' está Stopped. Iniciando..."
+                    & $appcmd start site "$siteName"
+                  } else {
+                    Write-Host "Site '$siteName' já está Started (ou em transição)."
+                  }
